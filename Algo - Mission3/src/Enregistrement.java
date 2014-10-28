@@ -77,8 +77,11 @@ public class Enregistrement {
 	
 	public String toString() {
 		String result;
-		result = "titre de la revue : "+title;
-		result += "\n\t rang : "+rank+" "+for1+"=>"+for1Name+", "+for2+"=>"+for2Name+", "+for3+"=>"+for3Name;
+		result = "titre : "+title;
+		result += "\n\tRank : "+rank+" ";
+		result += (for1!=null)? ("\n\t- FoR1 : "+for1+" => FoR1 Name : "+for1Name):"";
+		result += (for2!=null)? ("\n\t- FoR2 : "+for2+" => FoR2 Name : "+for2Name):"";
+		result += (for3!=null)? ("\n\t- FoR3 : "+for3+" => FoR3 Name : "+for3Name):"";
 		return result;
 	}
 }

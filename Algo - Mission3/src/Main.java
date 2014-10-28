@@ -10,31 +10,77 @@ public class Main {
 	public static final int FOR3NAME = 7;
 	
 	public static void main(String[] args) {
+		
+		// création et ouverture du fichier en lecture
 		Fichier fichierR = new Fichier();
 		fichierR.ouvrir("journals.csv", 'R');
-		
 		String ligneInput = null;
 		GestionEnregistrements gestionEnregistrement = new GestionEnregistrements();
-		
+		// On effectue la lecture ligne par ligne
 		while((ligneInput = fichierR.lire()) != null){
+			// On commence par vérifier si la ligne n'est pas vide, si c'est le cas, on passe à la ligne suivante
+			if(ligneInput.isEmpty()){
+				continue;
+			}
+			// On check le cas où la ligne contient des '"' et on effectue un traitement particulier
+			if(ligneInput.contains("\"")){
+				ligneInput = traitement(ligneInput);
+			}
+			// On calcule le nombre de virgule séparant les différents champs pour vérfier la cohérence des données
+			int nombreVirgule = 0;
+			for (int i = 0; i < ligneInput.length(); i++) {
+				if(ligneInput.charAt(i) == ','){
+					nombreVirgule++;
+				}
+			}
+			// Si le nombre de virgule séparant les différents champs n'est pas celle défini en header de fichier.
+			if(nombreVirgule != 7){
+				continue;
+			}
+			// Après avoir séparé les différents champs, on remplace pour chaque champ les '\' par des ','
 			String[] champs = ligneInput.split(",");
+			for (int i = 0; i < champs.length; i++) {
+				champs[i] = champs[i].replace('\\', ',');
+			}
+			
 			Enregistrement enregistrement = null;
 			switch (champs.length) {
-			case 4:
-				enregistrement = new Enregistrement(champs[RANK], champs[TITLE], champs[FOR1], champs[FOR1NAME]);
-				break;
-			case 6: 
-				enregistrement = new Enregistrement(champs[RANK], champs[TITLE], champs[FOR1], champs[FOR1NAME], champs[FOR2], champs[FOR2NAME]);
-				break;
-			case 8:
-				enregistrement = new Enregistrement(champs[RANK], champs[TITLE], champs[FOR1], champs[FOR1NAME], champs[FOR2], champs[FOR2NAME], champs[FOR3], champs[FOR3NAME]);
-			default:
-				break;
+				case 4:
+					enregistrement = new Enregistrement(champs[RANK], champs[TITLE], champs[FOR1], champs[FOR1NAME]);
+					break;
+				case 6: 
+					enregistrement = new Enregistrement(champs[RANK], champs[TITLE], champs[FOR1], champs[FOR1NAME], champs[FOR2], champs[FOR2NAME]);
+					break;
+				case 8:
+					enregistrement = new Enregistrement(champs[RANK], champs[TITLE], champs[FOR1], champs[FOR1NAME], champs[FOR2], champs[FOR2NAME], champs[FOR3], champs[FOR3NAME]);
+					break;
+				default:
+					break;
 			}
 			if(enregistrement != null)
 				gestionEnregistrement.setEnregistrement(enregistrement.getTitle(), enregistrement);
-			System.out.println(enregistrement.toString());
 		}
-		System.out.println("rank : "+(gestionEnregistrement.getEnregistrement("International Education Journal")).getRank());
+		
+		// simple test
+		System.out.println((gestionEnregistrement.getEnregistrement("Accounting Historians Journal")).toString());
 	}
+	public static String traitement(String input){
+		for(int i =0; i<input.length()-1; i++){
+			if(input.charAt(i)== ',' && input.charAt(i+1)=='"' ){
+				int j =i;
+				while (!((input.length() == j+1 && input.charAt(j) == '"') || (input.charAt(j)=='"' && input.charAt(j+1)==','))){
+					j++;
+				}
+				// Pour une chaine comprise entre '"', on remplace les ',' par des '\' en prévention d'un futur split sur cette ligne avec le séparateur ','
+				String subStringModified = (input.substring(i+2,j)).replace(',', '\\'); 
+				// On remplace l'ancienne substring par la nouvelle
+				input = input.substring(0,i+1)+subStringModified+input.substring(j+1,input.length());
+			}
+		}
+		// on remplace tous les "" par des "
+		input = input.replaceAll("\"\"", "\"");
+		return input;
+	}
+	
+	
 }
