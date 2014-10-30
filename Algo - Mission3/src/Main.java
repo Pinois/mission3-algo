@@ -1,4 +1,7 @@
-
+/**
+ * @author = Denis
+ * 
+ */
 public class Main {
 	public static final int RANK = 0;
 	public static final int TITLE = 1;
@@ -11,33 +14,33 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		// création et ouverture du fichier en lecture
+		// crÃ©ation et ouverture du fichier en lecture
 		Fichier fichierR = new Fichier();
 		fichierR.ouvrir("journals.csv", 'R');
 		String ligneInput = null;
 		GestionEnregistrements gestionEnregistrement = new GestionEnregistrements();
 		// On effectue la lecture ligne par ligne
 		while((ligneInput = fichierR.lire()) != null){
-			// On commence par vérifier si la ligne n'est pas vide, si c'est le cas, on passe à la ligne suivante
+			// On commence par vÃ©rifier si la ligne n'est pas vide, si c'est le cas, on passe Ã  la ligne suivante
 			if(ligneInput.isEmpty()){
 				continue;
 			}
-			// On check le cas où la ligne contient des '"' et on effectue un traitement particulier
+			// On check le cas oÃ¹ la ligne contient des '"' et on effectue un traitement particulier
 			if(ligneInput.contains("\"")){
 				ligneInput = traitement(ligneInput);
 			}
-			// On calcule le nombre de virgule séparant les différents champs pour vérfier la cohérence des données
+			// On calcule le nombre de virgule sÃ©parant les diffÃ©rents champs pour vÃ©rfier la cohÃ©rence des donnÃ©es
 			int nombreVirgule = 0;
 			for (int i = 0; i < ligneInput.length(); i++) {
 				if(ligneInput.charAt(i) == ','){
 					nombreVirgule++;
 				}
 			}
-			// Si le nombre de virgule séparant les différents champs n'est pas celle défini en header de fichier.
+			// Si le nombre de virgule sÃ©parant les diffÃ©rents champs n'est pas celle dÃ©fini en header de fichier.
 			if(nombreVirgule != 7){
 				continue;
 			}
-			// Après avoir séparé les différents champs, on remplace pour chaque champ les '\' par des ','
+			// AprÃ¨s avoir sÃ©parÃ© les diffÃ©rents champs, on remplace pour chaque champ les '\' par des ','
 			String[] champs = ligneInput.split(",");
 			for (int i = 0; i < champs.length; i++) {
 				champs[i] = champs[i].replace('\\', ',');
@@ -71,7 +74,7 @@ public class Main {
 				while (!((input.length() == j+1 && input.charAt(j) == '"') || (input.charAt(j)=='"' && input.charAt(j+1)==','))){
 					j++;
 				}
-				// Pour une chaine comprise entre '"', on remplace les ',' par des '\' en prévention d'un futur split sur cette ligne avec le séparateur ','
+				// Pour une chaine comprise entre '"', on remplace les ',' par des '\' en prÃ©vention d'un futur split sur cette ligne avec le sÃ©parateur ','
 				String subStringModified = (input.substring(i+2,j)).replace(',', '\\'); 
 				// On remplace l'ancienne substring par la nouvelle
 				input = input.substring(0,i+1)+subStringModified+input.substring(j+1,input.length());
